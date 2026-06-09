@@ -1,0 +1,13 @@
+{
+  "name": "comprasback",
+  "version": "1.0.0",
+  "description": "backend para sistema de compras la martina",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "Ignacio LP",
+  "license": "ISC"
+}
