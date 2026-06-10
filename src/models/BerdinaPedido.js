@@ -18,12 +18,11 @@ const pedidoSchema = new mongoose.Schema({
   items:      [itemSchema],
 }, { timestamps: true })
 
-pedidoSchema.pre('save', async function (next) {
+pedidoSchema.pre('save', async function () {
   if (this.isNew && !this.nro_pedido) {
-    const last = await mongoose.model('BerdinaPedido').findOne().sort({ nro_pedido: -1 })
-    this.nro_pedido = last ? last.nro_pedido + 1 : 1
+    const last = await mongoose.model('BerdinaPedido').findOne({ nro_pedido: { $exists: true } }).sort({ nro_pedido: -1 })
+    this.nro_pedido = last?.nro_pedido ? last.nro_pedido + 1 : 1
   }
-  next()
 })
 
 export default mongoose.model('BerdinaPedido', pedidoSchema)
