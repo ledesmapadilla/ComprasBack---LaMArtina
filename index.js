@@ -4,6 +4,6 @@ import Server from "./src/server/config.js";
 const server = new Server();
 server.app.use(`/api`, router);
 
-server.listen();
+if (!process.env.VERCEL) server.listen();
 
 export default server.app;
