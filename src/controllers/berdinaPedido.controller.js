@@ -1,16 +1,8 @@
 import BerdinaPedido from '../models/BerdinaPedido.js'
 
-const validar = ({ fecha, nombre_repuesto, urgencia, grupo }) => {
-  if (!fecha) return 'La fecha es obligatoria.'
-  if (!nombre_repuesto?.trim()) return 'El nombre del repuesto es obligatorio.'
-  if (!urgencia) return 'La urgencia es obligatoria.'
-  if (!grupo) return 'El grupo es obligatorio.'
-  return null
-}
-
 export const getAll = async (req, res) => {
   try {
-    const pedidos = await BerdinaPedido.find().sort({ fecha: -1 })
+    const pedidos = await BerdinaPedido.find().sort({ nro_pedido: -1 })
     res.json(pedidos)
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -19,29 +11,45 @@ export const getAll = async (req, res) => {
 
 export const crear = async (req, res) => {
   try {
-    const err = validar(req.body)
-    if (err) return res.status(400).json({ error: err })
-    const nuevo = await BerdinaPedido.create(req.body)
+    const { fecha, items } = req.body
+    if (!fecha) return res.status(400).json({ error: 'La fecha es obligatoria.' })
+    if (!items || items.length === 0) return res.status(400).json({ error: 'El pedido debe tener al menos un ítem.' })
+    for (const item of items) {
+      if (!item.nombre_repuesto?.trim()) return res.status(400).json({ error: 'Cada ítem debe tener nombre de repuesto.' })
+      if (!item.urgencia) return res.status(400).json({ error: 'Cada ítem debe tener urgencia.' })
+      if (!item.grupo) return res.status(400).json({ error: 'Cada ítem debe tener grupo.' })
+    }
+    const nuevo = await new BerdinaPedido({ fecha, items }).save()
     res.status(201).json(nuevo)
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
 }
 
-export const actualizar = async (req, res) => {
+export const actualizarItem = async (req, res) => {
   try {
-    const err = validar(req.body)
-    if (err) return res.status(400).json({ error: err })
-    const updated = await BerdinaPedido.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-    res.json(updated)
+    const pedido = await BerdinaPedido.findById(req.params.id)
+    if (!pedido) return res.status(404).json({ error: 'Pedido no encontrado.' })
+    const item = pedido.items.id(req.params.itemId)
+    if (!item) return res.status(404).json({ error: 'Ítem no encontrado.' })
+    Object.assign(item, req.body)
+    await pedido.save()
+    res.json(pedido)
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
 }
 
-export const borrar = async (req, res) => {
+export const borrarItem = async (req, res) => {
   try {
-    await BerdinaPedido.findByIdAndDelete(req.params.id)
+    const pedido = await BerdinaPedido.findById(req.params.id)
+    if (!pedido) return res.status(404).json({ error: 'Pedido no encontrado.' })
+    pedido.items.pull(req.params.itemId)
+    if (pedido.items.length === 0) {
+      await BerdinaPedido.findByIdAndDelete(req.params.id)
+    } else {
+      await pedido.save()
+    }
     res.json({ ok: true })
   } catch (error) {
     res.status(500).json({ error: error.message })

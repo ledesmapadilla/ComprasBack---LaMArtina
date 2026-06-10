@@ -2,15 +2,28 @@ import mongoose from 'mongoose'
 
 const GRUPOS = ['Pulverizadora', 'Chancho', 'Nodriza', 'Desmalezadora', 'Hervicida', 'Abonadora', 'Riego', 'Arquito', 'Tractores', 'Camioneta', 'Manitou', 'Colectivos', 'Herreria', 'Gomeria', 'Stock', 'Otros']
 
-const schema = new mongoose.Schema({
-  fecha:           { type: Date, required: true },
+const itemSchema = new mongoose.Schema({
   nombre_repuesto: { type: String, required: true, trim: true },
   cant:            { type: Number, min: 1 },
   descripcion:     { type: String, trim: true },
-  urgencia:        { type: String, enum: ['Baja', 'Media', 'Alta', 'Crítica'], required: true },
+  urgencia:        { type: String, enum: ['Baja', 'Media', 'Alta', 'Crítica'], required: true, default: 'Media' },
   grupo:           { type: String, enum: GRUPOS, required: true },
   cc:              { type: String, trim: true },
   estado:          { type: String, enum: ['Pendiente', 'En proceso', 'Completado', 'Cancelado'], default: 'Pendiente' },
+})
+
+const pedidoSchema = new mongoose.Schema({
+  nro_pedido: { type: Number, unique: true },
+  fecha:      { type: Date, required: true },
+  items:      [itemSchema],
 }, { timestamps: true })
 
-export default mongoose.model('BerdinaPedido', schema)
+pedidoSchema.pre('save', async function (next) {
+  if (this.isNew && !this.nro_pedido) {
+    const last = await mongoose.model('BerdinaPedido').findOne().sort({ nro_pedido: -1 })
+    this.nro_pedido = last ? last.nro_pedido + 1 : 1
+  }
+  next()
+})
+
+export default mongoose.model('BerdinaPedido', pedidoSchema)
