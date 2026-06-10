@@ -13,7 +13,7 @@ const itemSchema = new mongoose.Schema({
 })
 
 const pedidoSchema = new mongoose.Schema({
-  nro_pedido: { type: Number, unique: true },
+  nro_pedido: { type: Number, unique: true, sparse: true },
   fecha:      { type: Date, required: true },
   items:      [itemSchema],
 }, { timestamps: true })
