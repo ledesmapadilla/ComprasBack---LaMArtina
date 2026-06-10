@@ -9,7 +9,7 @@ const itemSchema = new mongoose.Schema({
   urgencia:        { type: String, enum: ['Baja', 'Media', 'Alta', 'Crítica'], required: true, default: 'Media' },
   grupo:           { type: String, enum: GRUPOS, required: true },
   cc:              { type: String, trim: true },
-  estado:          { type: String, enum: ['Pendiente', 'En proceso', 'Completado', 'Cancelado'], default: 'Pendiente' },
+  estado:          { type: String, enum: ['Pedido', 'Pendiente', 'En proceso', 'Completado', 'Cancelado'], default: 'Pedido' },
 })
 
 const pedidoSchema = new mongoose.Schema({
