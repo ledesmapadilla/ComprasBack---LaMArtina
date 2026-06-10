@@ -5,9 +5,11 @@ export const getAll = async (req, res) => {
     const pedidos = await BerdinaPedido.find().sort({ nro_pedido: -1 })
     res.json(pedidos)
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.message, stack: error.stack?.slice(0, 300) })
   }
 }
+
+export const ping = (req, res) => res.json({ ok: true, ts: Date.now() })
 
 export const crear = async (req, res) => {
   try {

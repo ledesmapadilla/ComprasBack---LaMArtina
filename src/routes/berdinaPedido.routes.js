@@ -1,7 +1,8 @@
 import { Router } from 'express'
-import { getAll, crear, actualizarItem, borrarItem } from '../controllers/berdinaPedido.controller.js'
+import { getAll, crear, actualizarItem, borrarItem, ping } from '../controllers/berdinaPedido.controller.js'
 
 const router = Router()
+router.get('/ping', ping)
 router.get('/', getAll)
 router.post('/', crear)
 router.put('/:id/items/:itemId', actualizarItem)
