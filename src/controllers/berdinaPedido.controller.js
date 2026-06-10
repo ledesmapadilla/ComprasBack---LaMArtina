@@ -1,10 +1,10 @@
 import BerdinaPedido from '../models/BerdinaPedido.js'
 
-const validar = ({ fecha, nombre_repuesto, urgencia, destino }) => {
+const validar = ({ fecha, nombre_repuesto, urgencia, grupo }) => {
   if (!fecha) return 'La fecha es obligatoria.'
   if (!nombre_repuesto?.trim()) return 'El nombre del repuesto es obligatorio.'
   if (!urgencia) return 'La urgencia es obligatoria.'
-  if (!destino?.trim()) return 'El destino es obligatorio.'
+  if (!grupo) return 'El grupo es obligatorio.'
   return null
 }
 
