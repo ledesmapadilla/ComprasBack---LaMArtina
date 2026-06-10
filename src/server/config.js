@@ -15,6 +15,7 @@ export default class Server {
 
   middleware() {
     this.app.use(cors({ origin: "*" }));
+    this.app.options("*", cors({ origin: "*" }));
     this.app.use(express.json());
     this.app.use(morgan("dev"));
 
