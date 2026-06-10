@@ -24,7 +24,7 @@ export const crear = async (req, res) => {
     const nuevo = await new BerdinaPedido({ fecha, items }).save()
     res.status(201).json(nuevo)
   } catch (error) {
-    res.status(400).json({ error: error.message })
+    res.status(500).json({ error: error.message })
   }
 }
 
