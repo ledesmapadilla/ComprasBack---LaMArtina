@@ -5,6 +5,7 @@ const GRUPOS = ['Pulverizadora', 'Chancho', 'Nodriza', 'Desmalezadora', 'Hervici
 const schema = new mongoose.Schema({
   fecha:           { type: Date, required: true },
   nombre_repuesto: { type: String, required: true, trim: true },
+  cant:            { type: Number, min: 1 },
   descripcion:     { type: String, trim: true },
   urgencia:        { type: String, enum: ['Baja', 'Media', 'Alta', 'Crítica'], required: true },
   grupo:           { type: String, enum: GRUPOS, required: true },
