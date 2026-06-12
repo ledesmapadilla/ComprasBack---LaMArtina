@@ -28,9 +28,9 @@ const pedidoSchema = new mongoose.Schema({
 
 pedidoSchema.pre('save', async function () {
   if (this.isNew && !this.nro_pedido) {
-    const last = await mongoose.model('BerdinaPedido').findOne({ nro_pedido: { $exists: true } }).sort({ nro_pedido: -1 })
+    const last = await mongoose.model('SanPabloPedido').findOne({ nro_pedido: { $exists: true } }).sort({ nro_pedido: -1 })
     this.nro_pedido = last?.nro_pedido ? last.nro_pedido + 1 : 1
   }
 })
 
-export default mongoose.model('BerdinaPedido', pedidoSchema)
+export default mongoose.model('SanPabloPedido', pedidoSchema)
