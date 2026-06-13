@@ -2,10 +2,23 @@ import SanPabloPedido from '../models/SanPabloPedido.js'
 
 export const getAll = async (req, res) => {
   try {
-    const pedidos = await SanPabloPedido.find().sort({ nro_pedido: -1 })
+    const pedidos = await SanPabloPedido.find({}, { 'items.historial': 0 }).sort({ nro_pedido: -1 })
     res.json(pedidos)
   } catch (error) {
     res.status(500).json({ error: error.message, stack: error.stack?.slice(0, 300) })
+  }
+}
+
+export const getHistorialItem = async (req, res) => {
+  try {
+    const pedido = await SanPabloPedido.findOne(
+      { _id: req.params.id, 'items._id': req.params.itemId },
+      { 'items.$': 1 }
+    )
+    if (!pedido) return res.status(404).json({ error: 'No encontrado.' })
+    res.json(pedido.items[0]?.historial || [])
+  } catch (error) {
+    res.status(500).json({ error: error.message })
   }
 }
 
