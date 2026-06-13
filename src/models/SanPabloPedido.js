@@ -31,7 +31,7 @@ const itemSchema = new mongoose.Schema({
 })
 
 const pedidoSchema = new mongoose.Schema({
-  nro_pedido: { type: Number },
+  nro_pedido: { type: Number, index: true },
   fecha:      { type: Date, required: true },
   items:      [itemSchema],
 }, { timestamps: true })

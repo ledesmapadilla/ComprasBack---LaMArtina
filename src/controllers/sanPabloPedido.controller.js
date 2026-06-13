@@ -34,15 +34,11 @@ export const crear = async (req, res) => {
 
 export const actualizarItem = async (req, res) => {
   try {
-    const pedido = await SanPabloPedido.findById(req.params.id)
-    if (!pedido) return res.status(404).json({ error: 'Pedido no encontrado.' })
-    const item = pedido.items.id(req.params.itemId)
-    if (!item) return res.status(404).json({ error: 'Ítem no encontrado.' })
     const { usuario, nota, ...campos } = req.body
     const setFields = {}
     Object.entries(campos).forEach(([k, v]) => { setFields[`items.$.${k}`] = v })
     const update = { $set: setFields }
-    if (campos.estado && campos.estado !== item.estado) {
+    if (campos.estado) {
       update.$push = { 'items.$.historial': { estado: campos.estado, usuario: usuario || 'Sistema', fecha: new Date(), ...(nota ? { nota } : {}) } }
     }
     const updated = await SanPabloPedido.findOneAndUpdate(
@@ -50,6 +46,7 @@ export const actualizarItem = async (req, res) => {
       update,
       { new: true }
     )
+    if (!updated) return res.status(404).json({ error: 'Pedido o ítem no encontrado.' })
     res.json(updated)
   } catch (error) {
     res.status(400).json({ error: error.message })
