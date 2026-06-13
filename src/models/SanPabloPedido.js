@@ -2,15 +2,24 @@ import mongoose from 'mongoose'
 
 const GRUPOS = ['Pulverizadora', 'Chancho', 'Nodriza', 'Desmalezadora', 'Herbicida', 'Abonadora', 'Riego', 'Arquito', 'Tractores', 'Camioneta', 'Manitou', 'Colectivos', 'Herreria', 'Gomeria', 'Stock', 'Otros']
 
+const historialItemSchema = new mongoose.Schema({
+  fecha:   { type: Date, default: Date.now },
+  estado:  { type: String },
+  usuario: { type: String },
+  nota:    { type: String },
+}, { _id: false })
+
 const itemSchema = new mongoose.Schema({
   nombre_repuesto: { type: String, required: true, trim: true },
   cant:            { type: Number, min: 1 },
+  unidad:          { type: String, trim: true },
   descripcion:     { type: String, trim: true },
   urgencia:        { type: String, enum: ['Baja', 'Media', 'Alta', 'Crítica'], required: true, default: 'Media' },
   grupo:           { type: String, enum: GRUPOS, required: true },
   cc:              { type: String, trim: true },
   solicita:        { type: String, trim: true },
-  estado:          { type: String, enum: ['Para analisis', 'Pedido', 'Para hacer OC', 'Autorizar', 'Pendiente', 'En proceso', 'Completado', 'Cancelado'], default: 'Para analisis' },
+  estado:          { type: String, enum: ['Para analisis', 'En analisis', 'Pedido', 'Para hacer OC', 'Autorizar', 'Pendiente', 'En proceso', 'Completado', 'Cancelado', 'Rechazado'], default: 'Para analisis' },
+  historial:  { type: [historialItemSchema], default: [] },
   stock:      { type: Number },
   proveedor1: { type: String },
   precio1:    { type: Number },

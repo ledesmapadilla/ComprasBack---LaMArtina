@@ -21,7 +21,11 @@ export const crear = async (req, res) => {
       if (!item.urgencia) return res.status(400).json({ error: 'Cada ítem debe tener urgencia.' })
       if (!item.grupo) return res.status(400).json({ error: 'Cada ítem debe tener grupo.' })
     }
-    const nuevo = await new SanPabloPedido({ fecha, items }).save()
+    const itemsConHistorial = items.map(item => ({
+      ...item,
+      historial: [{ estado: 'Para analisis', usuario: item.solicita || 'Sistema', nota: 'Pedido creado' }],
+    }))
+    const nuevo = await new SanPabloPedido({ fecha, items: itemsConHistorial }).save()
     res.status(201).json(nuevo)
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -34,9 +38,19 @@ export const actualizarItem = async (req, res) => {
     if (!pedido) return res.status(404).json({ error: 'Pedido no encontrado.' })
     const item = pedido.items.id(req.params.itemId)
     if (!item) return res.status(404).json({ error: 'Ítem no encontrado.' })
-    Object.assign(item, req.body)
-    await pedido.save()
-    res.json(pedido)
+    const { usuario, nota, ...campos } = req.body
+    const setFields = {}
+    Object.entries(campos).forEach(([k, v]) => { setFields[`items.$.${k}`] = v })
+    const update = { $set: setFields }
+    if (campos.estado && campos.estado !== item.estado) {
+      update.$push = { 'items.$.historial': { estado: campos.estado, usuario: usuario || 'Sistema', fecha: new Date(), ...(nota ? { nota } : {}) } }
+    }
+    const updated = await SanPabloPedido.findOneAndUpdate(
+      { _id: req.params.id, 'items._id': req.params.itemId },
+      update,
+      { new: true }
+    )
+    res.json(updated)
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
