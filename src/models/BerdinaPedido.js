@@ -18,7 +18,7 @@ const itemSchema = new mongoose.Schema({
   grupo:           { type: String, enum: GRUPOS, required: true },
   cc:              { type: String, trim: true },
   solicita:        { type: String, trim: true },
-  estado:          { type: String, enum: ['Para analisis', 'En analisis', 'Pedido', 'Para hacer OC', 'Autorizar', 'Pendiente', 'En proceso', 'Completado', 'Cancelado', 'Rechazado'], default: 'Para analisis' },
+  estado:          { type: String, enum: ['Para analisis', 'En analisis', 'Pedido', 'Para hacer OC', 'Autorizar', 'Pendiente', 'En proceso', 'Para retirar', 'Completado', 'Cancelado', 'Rechazado'], default: 'Para analisis' },
   historial:  { type: [historialItemSchema], default: [] },
   stock:      { type: Number },
   proveedor1: { type: String },
@@ -27,6 +27,7 @@ const itemSchema = new mongoose.Schema({
   precio2:    { type: Number },
   proveedor3: { type: String },
   precio3:    { type: Number },
+  oc:         { type: String },
 })
 
 const pedidoSchema = new mongoose.Schema({
