@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import { getAll, crear, actualizarItem, borrarItem, ping, getHistorialItem } from '../controllers/sanPabloPedido.controller.js'
+import { getAll, crear, actualizarItem, borrarItem, ping, getHistorialItem, getItemsPorEstado } from '../controllers/sanPabloPedido.controller.js'
 
 const router = Router()
 router.get('/ping', ping)
+router.get('/por-estado/:estado', getItemsPorEstado)
 router.get('/', getAll)
 router.post('/', crear)
 router.get('/:id/items/:itemId/historial', getHistorialItem)

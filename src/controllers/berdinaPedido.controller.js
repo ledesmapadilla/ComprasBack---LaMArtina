@@ -22,6 +22,24 @@ export const getHistorialItem = async (req, res) => {
   }
 }
 
+export const getItemsPorEstado = async (req, res) => {
+  try {
+    const { estado } = req.params
+    const pedidos = await BerdinaPedido.find(
+      { 'items.estado': estado },
+      { nro_pedido: 1, fecha: 1, items: 1 }
+    ).lean()
+    const items = pedidos.flatMap(p =>
+      p.items
+        .filter(i => i.estado === estado)
+        .map(({ historial: _, ...i }) => ({ ...i, nro_pedido: p.nro_pedido, fecha: p.fecha, pedidoId: p._id }))
+    )
+    res.json(items)
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
 export const ping = (req, res) => res.json({ ok: true, ts: Date.now() })
 
 export const crear = async (req, res) => {
