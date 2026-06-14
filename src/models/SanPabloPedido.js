@@ -36,6 +36,8 @@ const pedidoSchema = new mongoose.Schema({
   items:      [itemSchema],
 }, { timestamps: true })
 
+pedidoSchema.index({ 'items.estado': 1 })
+
 pedidoSchema.pre('save', async function () {
   if (this.isNew && !this.nro_pedido) {
     const last = await mongoose.model('SanPabloPedido').findOne({ nro_pedido: { $exists: true } }).sort({ nro_pedido: -1 })
