@@ -11,6 +11,16 @@ export const getAll = async (req, res) => {
   }
 }
 
+export const getByDisplay = async (req, res) => {
+  try {
+    const oc = await OC.findOne({ nro_oc_display: req.params.display })
+    if (!oc) return res.status(404).json({ error: 'OC no encontrada' })
+    res.json(oc)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
 export const crear = async (req, res) => {
   try {
     const { items, total, establecimiento } = req.body
