@@ -3,7 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import "./dbconfig.js";
+import { connectDB } from "./dbconfig.js";
 import "colors";
 
 export default class Server {
@@ -14,6 +14,10 @@ export default class Server {
   }
 
   middleware() {
+    this.app.use(async (req, res, next) => {
+      try { await connectDB(); next(); }
+      catch (err) { res.status(503).json({ error: 'Database unavailable' }); }
+    });
     this.app.use((req, res, next) => {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
