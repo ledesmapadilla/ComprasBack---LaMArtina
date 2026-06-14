@@ -40,6 +40,38 @@ export const getItemsPorEstado = async (req, res) => {
   }
 }
 
+export const getHistorialGerencia = async (req, res) => {
+  try {
+    const pedidos = await SanPabloPedido.find(
+      { 'items.historial.usuario': 'Gerencia' },
+      { nro_pedido: 1, fecha: 1, items: 1 }
+    ).lean()
+    const resultado = pedidos.flatMap(p =>
+      p.items
+        .filter(i => i.historial?.some(h => h.usuario === 'Gerencia'))
+        .map(i => ({
+          _id: i._id,
+          nombre_repuesto: i.nombre_repuesto,
+          cant: i.cant,
+          urgencia: i.urgencia,
+          grupo: i.grupo,
+          estado: i.estado,
+          nro_pedido: p.nro_pedido,
+          fecha: p.fecha,
+          pedidoId: p._id,
+          accionesGerencia: i.historial.filter(h => h.usuario === 'Gerencia'),
+        }))
+    ).sort((a, b) => {
+      const fa = a.accionesGerencia.at(-1)?.fecha
+      const fb = b.accionesGerencia.at(-1)?.fecha
+      return new Date(fb) - new Date(fa)
+    })
+    res.json(resultado)
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
 export const ping = (req, res) => res.json({ ok: true, ts: Date.now() })
 
 export const crear = async (req, res) => {
