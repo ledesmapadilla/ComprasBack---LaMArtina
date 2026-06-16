@@ -1,4 +1,5 @@
 import { Router } from "express";
+import authRoutes from "./auth.routes.js";
 import usuarioRoutes from "./usuario.routes.js";
 import proveedorRoutes from "./proveedor.routes.js";
 import berdinaPedidoRoutes from "./berdinaPedido.routes.js";
@@ -7,6 +8,9 @@ import centroCostoRoutes from "./centroCosto.routes.js";
 import ocRoutes from "./oc.routes.js";
 
 const router = Router();
+
+router.use("/auth", authRoutes);
+
 router.use("/usuarios", usuarioRoutes);
 router.use("/proveedores", proveedorRoutes);
 router.use("/berdina/pedidos", berdinaPedidoRoutes);
